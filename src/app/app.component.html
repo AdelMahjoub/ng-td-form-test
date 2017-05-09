@@ -1,0 +1,200 @@
+<div class="container">
+  <div class="row">
+    <div class="page-header"></div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 col-xs-12">
+      <!-- Add a Form with the following Inputs (and Validators)
+            1) Mail address (should not be empty and should be an email address)
+            2) A Dropdown which allows the user to select from three different Subscriptions ("Basic", "Advanced", "Pro")
+                Set "Advanced" as Default
+            3) A Password field (should not be empty)
+            4) A Submit Button
+
+            Display a warning message if the Form is invalid AND was touched. Display a warning message below each input if it's invalid.
+
+            Upon submitting the form, you should simply print the Value of the Form to the Console.
+            Optionally, display it in your template.
+        -->
+
+      <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+      <!--                                            Assignement Solution                                                               -->
+      <!--///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+
+      <!-- NgForm / Signup form -->
+      <form class="form-horizontal" (ngSubmit)="onSubmit()" #f="ngForm">
+        <fieldset>
+
+          <!-- BS3 EMAIL GROUP -->
+          <div class="form-group">
+            <label for="email" class="col-md-2 control-label hidden-xs">Email</label>
+            <div class="col-md-10 col-xs-12">
+              <!-- NgModel / email input field-->
+              <div class="input-group">
+                <input 
+                  id="email" 
+                  type="email" 
+                  class="form-control" 
+                  placeholder="Email" 
+                  required name="email" 
+                  ngModel email 
+                  #email="ngModel">
+                <div class="input-group-addon">
+                  <!-- valid / error icon -->
+                  <span *ngIf="email['value'] !== '' && email['valid']" class="form-valid glyphicon glyphicon-ok"></span>
+                  <span *ngIf="email['value'] !== '' && !email['valid']" class="form-error glyphicon glyphicon-remove"></span>
+                  <span *ngIf="email['value'] === ''" class="glyphicon glyphicon-minus"></span>
+                </div>
+              </div>
+              <!-- error message -->
+              <div class="form-message visible-md visible-lg">
+                <small class="form-error form-message" *ngIf="email['value'] !== '' && !email.valid && email['dirty']">
+                  <strong>Invalid email</strong> 
+                </small>
+              </div>
+            </div>
+          </div><!-- END OF EMAIL GROUP -->
+
+          <!-- BS3 PASSWORD GROUP -->
+          <div class="form-group">
+            <label for="password" class="col-md-2 control-label hidden-xs">Password</label>
+            <div class="col-md-10 col-xs-12">
+              <!-- NgModel / password input field-->
+              <div class="input-group">
+                <input 
+                  id="password" 
+                  type="password" 
+                  class="form-control" 
+                  placeholder="Password"
+                  required
+                  name="password" 
+                  ngModel minlength="6" 
+                  #password="ngModel">
+                <div class="input-group-addon">
+                  <!-- valid / error icon -->
+                  <span *ngIf="password['value'] !== '' && password['valid']" class="form-valid glyphicon glyphicon-ok"></span>
+                  <span *ngIf="password['value'] !== '' && !password['valid']" class="form-error glyphicon glyphicon-remove"></span>
+                  <span *ngIf="password['value'] === ''" class="glyphicon glyphicon-minus"></span>
+                </div>
+              </div>
+              <!-- error message -->
+              <div class="form-message visible-md visible-lg">
+                <small class="form-error form-message" *ngIf="password['value'] !== '' && !password.valid && password['dirty']">
+              <strong>Minimum length 6 characters</strong> 
+            </small>
+              </div>
+            </div>
+          </div><!-- END OF BS3 PASSWORD GROUP -->
+
+          <!-- BS3 CONFIRM PASSWORD GROUP -->
+          <div class="form-group">
+            <div class="col-md-10 col-xs-12 col-md-offset-2">
+              <!-- NgModel / confirmPassword input field-->
+              <div class="input-group">
+                <input 
+                type="password" 
+                class="form-control" 
+                placeholder="Confirm password"
+                required 
+                name="confirmPassword" 
+                ngModel 
+                minlength="6" 
+                #confirmPassword="ngModel">
+                <div class="input-group-addon">
+                  <!-- valid / error icon -->
+                  <span 
+                    *ngIf="confirmPassword['value'] !== '' && confirmPassword['valid'] && confirmPassword['value'] === password['value']"
+                    class="form-valid glyphicon glyphicon-ok"></span>
+                  <span *ngIf="confirmPassword['value'] !== '' && (!confirmPassword['valid'] || confirmPassword['value'] !== password['value'])"
+                    class="form-error glyphicon glyphicon-remove"></span>
+                  <span *ngIf="confirmPassword['value'] === ''" class="glyphicon glyphicon-minus"></span>
+                </div>
+              </div>
+              <!-- error message -->
+              <div class="form-message visible-md visible-lg">
+                <ng-template [ngIf]="confirmPassword['value'] !== '' && confirmPassword['dirty']">
+                  <small class="form-error form-message" *ngIf="!confirmPassword.valid; else passwordMisMatch">
+                    <strong>Minimum length 6 characters</strong> 
+                  </small>
+                  <ng-template #passwordMisMatch>
+                    <small class="form-error form-message" *ngIf="confirmPassword['value'] !== password['value']">
+                      <strong>Passwords do not match</strong> 
+                    </small>
+                  </ng-template>
+                </ng-template>
+              </div>
+            </div>
+          </div><!-- END OF BS3 CONFIRM PASSORD -->
+
+          <!-- BS3 SUBSCRIPTION GROUP -->
+          <div class="form-group">
+            <label for="password" class="col-md-2 control-label hidden-xs">Subscription</label>
+            <!-- NgModal / select field -->
+            <div class="col-md-10 col-xs-12">
+              <select 
+                name="subscription" 
+                class="form-control" 
+                required="required"
+                [ngModel]="'advanced'">
+                <ng-container *ngFor="let plan of formSubscriptionOptions">
+                  <option 
+                  [value]="plan" 
+                  [innerText]="plan[0].toUpperCase() + plan.substr(1,plan.length) + ' plan'"></option>
+                </ng-container>
+              </select>
+            </div>
+          </div>
+
+          <!-- BS3 SUBMIT FORM -->
+          <div class="form-group">
+            <div class="col-md-4 col-md-offset-2">
+              <!-- Submit form -->
+              <button 
+                type="button" 
+                class="btn btn-danger" 
+                (click)="onReset()" 
+                [disabled]="!f['dirty']">Reset</button>
+              <button 
+                type="submit" 
+                class="btn btn-success" 
+                [disabled]="!f.valid">Submit</button>
+            </div>
+          </div><!-- END OF BS3 SUBMIT FORM -->
+
+        </fieldset>
+      </form><!-- END OF BS3 FORM -->
+
+      <!-- BS3 SEPARATION LINE -->
+      <div class="row">
+        <div class="col-xs-12 col-md-12">
+          <hr>
+        </div>
+      </div><!-- END OF BS3 SEPARATION LINE -->
+
+    </div><!--END OF BS3 COL-->
+
+    <!-- FORM DATA OUTPUT -->
+    <div class="col-xs-12 col-md-6">
+      <div class="well" *ngIf="user">
+        <p>
+          <span class="badge">Email</span>
+          <span><strong>{{ user.email }}</strong></span>
+        </p>
+        <p>
+          <span class="badge">Password</span>
+          <span><strong>{{ user.password }}</strong></span>
+        </p>
+        <p>
+          <span class="badge">Subscription plan</span>
+          <span><strong>{{ user.subscription }}</strong></span>
+        </p>
+      </div>
+      <div *ngIf="browserHacked">
+        <p>
+          <code>{{ browserHacked }}</code>
+        </p>
+      </div>
+    </div>
+
+  </div><!-- END OF BS3 ROW -->
+</div><!-- END OF BS3 CONTAINER -->
